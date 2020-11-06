@@ -1,4 +1,4 @@
 public interface MainMethod {
 
-    void mainMethod();
+    void mainMethod(double minDepth);
 }
