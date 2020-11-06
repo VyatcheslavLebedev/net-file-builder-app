@@ -1,7 +1,7 @@
 
 public class MainMethodImpl implements MainMethod{
 
-    public void mainMethod(double minDepth) {
+    public void mainMethod() {
 
     }
 }

@@ -1,9 +1,11 @@
 package generationtrainconst;
 
 import models.Constants;
+import org.springframework.stereotype.Component;
 
 import static java.lang.Math.PI;
 
+@Component
 public class ConstantB {
 
     public double getB(Constants constants) {
