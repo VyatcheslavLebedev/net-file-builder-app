@@ -1,4 +1,4 @@
-package generationtrainconst;
+package generationtrainmain;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package generationtrainconst;
+package generationtrainmain;
 
 import models.Constants;
 import org.springframework.beans.factory.annotation.Value;

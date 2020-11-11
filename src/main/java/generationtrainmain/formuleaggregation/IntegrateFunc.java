@@ -1,4 +1,4 @@
 package generationtrainmain.formuleaggregation;
 
-public class RungeMethodImpl {
+public interface IntegrateFunc {
 }
