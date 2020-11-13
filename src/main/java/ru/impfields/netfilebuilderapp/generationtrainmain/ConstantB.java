@@ -1,6 +1,6 @@
-package generationtrainmain;
+package ru.impfields.netfilebuilderapp.generationtrainmain;
 
-import models.Constants;
+import ru.impfields.netfilebuilderapp.models.Constants;
 import org.springframework.stereotype.Component;
 
 import static java.lang.Math.PI;

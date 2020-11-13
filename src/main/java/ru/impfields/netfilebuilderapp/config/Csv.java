@@ -1,4 +1,4 @@
-package config;
+package ru.impfields.netfilebuilderapp.config;
 
 import com.opencsv.CSVWriter;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ public class Csv {
     }
 
     @Bean
-    public FileWriter getFileWriter(String filePath) throws IOException {
-        return new FileWriter(filePath);
+    public FileWriter getFileWriter() throws IOException {
+        return new FileWriter("train.csv");
     }
 
 }

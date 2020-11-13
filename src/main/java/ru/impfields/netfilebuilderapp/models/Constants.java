@@ -1,4 +1,4 @@
-package models;
+package ru.impfields.netfilebuilderapp.models;
 
 
 import lombok.AllArgsConstructor;

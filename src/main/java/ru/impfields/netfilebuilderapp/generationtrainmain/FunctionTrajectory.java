@@ -1,4 +1,4 @@
-package generationtrainmain;
+package ru.impfields.netfilebuilderapp.generationtrainmain;
 
 import org.springframework.stereotype.Component;
 
