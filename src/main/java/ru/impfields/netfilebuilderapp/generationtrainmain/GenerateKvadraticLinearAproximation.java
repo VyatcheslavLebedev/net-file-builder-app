@@ -2,15 +2,18 @@ package ru.impfields.netfilebuilderapp.generationtrainmain;
 
 import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.models.Constants;
 import ru.impfields.netfilebuilderapp.models.Limits;
 
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.Math.*;
 
+@Component
 public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
 
     private FileWriter fileWriter;
@@ -52,7 +55,7 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
                     delta = limits.getMinDelta();
                     while(delta <= limits.getMaxDelta()){
                         double t = 0.0;
-                        List<Double> dataWrite = new LinkedList<>();
+                        List<Double> dataWrite = new ArrayList<>();
                         List<Double> ex = new LinkedList<>();
                         List<Double> s = new LinkedList<>();
                         List<Double> gx = new LinkedList<>();
@@ -70,15 +73,19 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
                       dataWrite.addAll(gx);
                       dataWrite.add(beta);
 
-                      if ((abs(constantB.getB(constants)) >= 10) &&
-                              (constantA.getA(constants,limits) < constantB.getB(constants))){
+                      if ((abs(constantB.getB(constants)) >= limits.getAmplitudeMin()) &&
+                              (constantA.getA(constants,limits) <= constantB.getB(constants))){
                           dataWrite.add(1.0);
                       } else{
                          dataWrite.add(0.0);
                       }
 
-                      String[] itemsArray = new String[dataWrite.size()];
-                      csvWriter.writeNext(dataWrite.toArray(itemsArray));
+                      String[] array = new String[dataWrite.size()];
+
+                      for(int i = 0; i< dataWrite.size(); i++){
+                          array[i] = dataWrite.get(i).toString();
+                      }
+                      csvWriter.writeNext(array);
 
                       delta = delta + limits.getStepDelta();
                     }

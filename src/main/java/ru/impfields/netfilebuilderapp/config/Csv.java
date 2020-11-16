@@ -4,8 +4,7 @@ import com.opencsv.CSVWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 @Component
 public class Csv {
@@ -19,5 +18,16 @@ public class Csv {
     public FileWriter getFileWriter() throws IOException {
         return new FileWriter("train.csv");
     }
+
+    @Bean
+    public BufferedReader getBufferedReader(FileReader fileReader){
+        return new BufferedReader(fileReader);
+    }
+
+    @Bean
+    public FileReader getFileReader() throws FileNotFoundException {
+        return new FileReader("train.csv");
+    }
+
 
 }
