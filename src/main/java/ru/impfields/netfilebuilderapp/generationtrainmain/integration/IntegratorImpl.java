@@ -1,10 +1,12 @@
 package ru.impfields.netfilebuilderapp.generationtrainmain.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.models.Limits;
 
 import java.util.List;
 
+@Component
 public class IntegratorImpl implements Integrator{
 
     private Limits limits;
@@ -22,7 +24,7 @@ public class IntegratorImpl implements Integrator{
 
         s = points.get(0)*points.get(points.size()-1);
 
-        for(int i = 1; i < limits.getNumberPointsTime(); i++){
+        for(int i = 1; i < limits.getNumberPoints(); i++){
             s = s + z * points.get(i);
             z = 6 - z;
         }

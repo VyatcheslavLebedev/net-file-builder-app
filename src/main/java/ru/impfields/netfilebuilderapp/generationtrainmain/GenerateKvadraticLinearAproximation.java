@@ -38,54 +38,64 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
     }
 
     public void generate(){
-         double stepT = 1.0 / limits.getNumberPointsTime();
+         double stepT = 1.0 / limits.getNumberPoints();
+         double stepX = limits.getMinDepth() / limits.getNumberPoints();
          double alpha = limits.getMinAlpha();
          double beta = limits.getMinBeta();
          double gamma = limits.getMinGamma();
          double delta = limits.getMinDelta();
+         double sigma = limits.getMinSigma();
 
          while(alpha <= limits.getMaxAlpha()){
             beta = limits.getMinBeta();
             gamma = limits.getMinGamma();
             delta = limits.getMinDelta();
+            sigma = limits.getMinSigma();
             while(beta <= limits.getMaxBeta()){
                 gamma = limits.getMinGamma();
                 delta = limits.getMinDelta();
+                sigma = limits.getMinSigma();
                 while(gamma <= limits.getMaxGamma()){
                     delta = limits.getMinDelta();
+                    sigma = limits.getMinSigma();
                     while(delta <= limits.getMaxDelta()){
-                        double t = 0.0;
-                        List<Double> dataWrite = new ArrayList<>();
-                        List<Double> ex = new LinkedList<>();
-                        List<Double> s = new LinkedList<>();
-                        List<Double> gx = new LinkedList<>();
-                        Constants constants = new Constants(alpha,beta,gamma,delta);
-                      for(int i = 0; i <limits.getNumberPointsTime(); i++){
-                          double point = trajectory.trajectoryPoint(t,constantA.getA(constants,limits),
-                                  constantB.getB(constants));
-                          ex.add(alpha*(point + limits.getMinDepth()));
-                          s.add(gamma * (-1*(point + limits.getMinDepth())) * cos(2* PI * t) + 1);
-                          gx.add(delta * -1 * (point + limits.getMinDepth()/2) * (point + limits.getMinDepth()/2));
-                          t = t + stepT;
-                      }
-                      dataWrite.addAll(ex);
-                      dataWrite.addAll(s);
-                      dataWrite.addAll(gx);
-                      dataWrite.add(beta);
+                        sigma = limits.getMinSigma();
+                        while(sigma <= limits.getMaxSigma()) {
+                            double t = 0.0;
+                            double x = -1 * limits.getMinDepth();
+                            List<Double> dataWrite = new ArrayList<>();
+                            List<Double> ex = new LinkedList<>();
+                            List<Double> s = new LinkedList<>();
+                            List<Double> gx = new LinkedList<>();
+                            Constants constants = new Constants(alpha, beta, gamma, delta);
+                            for (int i = 0; i < limits.getNumberPoints(); i++) {
+                                ex.add(alpha * sigma * (x + limits.getMinDepth()));
+                                s.add(gamma * -1 * sigma * (x + limits.getMinDepth()) * cos(2 * PI * t) + 1);
+                                gx.add(delta * -1 * (x + limits.getMinDepth()/2.0) * (x + limits.getMinDepth()/2.0));
+                                t = t + stepT;
+                                x = x + stepX;
+                            }
+                            dataWrite.addAll(ex);
+                            dataWrite.addAll(s);
+                            dataWrite.addAll(gx);
+                            dataWrite.add(beta);
 
-                      if ((abs(constantB.getB(constants)) >= limits.getAmplitudeMin()) &&
-                              (constantA.getA(constants,limits) <= constantB.getB(constants))){
-                          dataWrite.add(1.0);
-                      } else{
-                         dataWrite.add(0.0);
-                      }
+                            if ((abs(constantB.getB(constants)) >= limits.getAmplitudeMin()) &&
+                                    (constantA.getA(constants, limits) <= constantB.getB(constants))) {
+                                dataWrite.add(1.0);
+                            } else {
+                                dataWrite.add(0.0);
+                            }
 
-                      String[] array = new String[dataWrite.size()];
+                            String[] array = new String[dataWrite.size()];
 
-                      for(int i = 0; i< dataWrite.size(); i++){
-                          array[i] = dataWrite.get(i).toString();
-                      }
-                      csvWriter.writeNext(array);
+                            for (int i = 0; i < dataWrite.size(); i++) {
+                                array[i] = dataWrite.get(i).toString();
+                            }
+                            csvWriter.writeNext(array);
+
+                            sigma = sigma + limits.getStepSigma();
+                        }
 
                       delta = delta + limits.getStepDelta();
                     }

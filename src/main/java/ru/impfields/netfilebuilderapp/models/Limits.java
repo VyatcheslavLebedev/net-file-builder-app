@@ -12,15 +12,19 @@ import org.springframework.stereotype.Component;
 public class Limits {
 
     private double minDepth = 90.0;
-    private int numberPointsTime = 30;
+    private int numberPoints = 30;
 
 
     private double amplitudeMin = 10.0;
 
-    private double limitA = 0.0;
-    private double limitB = 0.0;
-    private double minB = -90.0;
-    private double minA = -90.0;
+    private double minSigma = 1.0;
+    private double maxSigma = 3.0;
+    private double stepSigma = 1.0;
+
+    private double limitA = -1.0;
+    private double limitB = -1.0;
+    private double minB = -45.0;
+    private double minA = -45.0;
 
     private double stepA = 1.0;
     private double stepB = 1.0;
