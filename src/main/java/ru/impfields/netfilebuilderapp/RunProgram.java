@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.datashuffler.Shuffler;
 import ru.impfields.netfilebuilderapp.generationtrainmain.*;
+import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
 import ru.impfields.netfilebuilderapp.models.Limits;
 import ru.impfields.netfilebuilderapp.verifyer.Counter;
 
@@ -38,11 +39,14 @@ public class RunProgram{
 
     private Counter counter;
 
+    private Integrator integrator;
+
     @Autowired
     public RunProgram(FileWriter fileWriter1, CSVWriter csvWriter1,
                       ConstantA constantA1, ConstantB constantB1,
                       FunctionTrajectory functionTrajectory1,Limits limits1,
-                      BufferedReader bufferedReader,FileReader fileReader,Counter counter,Shuffler shuffler) {
+                      BufferedReader bufferedReader,FileReader fileReader,Counter counter,Shuffler shuffler,
+                      Integrator integrator) {
         fileWriter = fileWriter1;
         csvWriter = csvWriter1;
         constantA = constantA1;
@@ -53,15 +57,16 @@ public class RunProgram{
         this.fileReader = fileReader;
         this.counter = counter;
         this.shuffler = shuffler;
+        this.integrator = integrator;
     }
 
     @PostConstruct
     public void run() throws IOException {
-        GenerateTrainMain generateTrainMain = new GenerateKvadraticLinearAproximation(fileWriter,csvWriter,constantA,
-                constantB,functionTrajectory,limits);
+        GenerateTrainMain generateTrainMain = new GenerateHyperbolicAproximation(fileWriter,csvWriter,limits,
+                functionTrajectory,integrator);
         generateTrainMain.generate();
         counter.count();
-        shuffler.shuffle();
+        //shuffler.shuffle();
         //fileWriter.close();
         //csvWriter.close();
         //fileReader.close();

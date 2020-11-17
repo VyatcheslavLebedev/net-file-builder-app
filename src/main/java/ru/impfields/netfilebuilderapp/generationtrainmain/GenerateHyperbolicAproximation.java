@@ -4,7 +4,6 @@ import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
-import ru.impfields.netfilebuilderapp.models.Constants;
 import ru.impfields.netfilebuilderapp.models.Limits;
 
 import java.io.FileWriter;
@@ -24,8 +23,8 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
     private Integrator integrator;
 
     @Autowired
-    GenerateHyperbolicAproximation(FileWriter fileWriter, CSVWriter csvWriter,Limits limits,
-                                   FunctionTrajectory functionTrajectory,Integrator integrator){
+    public GenerateHyperbolicAproximation(FileWriter fileWriter, CSVWriter csvWriter, Limits limits,
+                                          FunctionTrajectory functionTrajectory, Integrator integrator){
         this.csvWriter = csvWriter;
         this.fileWriter = fileWriter;
         this.limits = limits;
@@ -41,7 +40,7 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
         double a = limits.getMinA();
         double b = limits.getMinB();
 
-        while(a < limits.getMinA()){
+        while(a < limits.getLimitA()){
             b = limits.getMinB();
             while(b < limits.getLimitB()){
                 double res;
@@ -92,16 +91,16 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
                                     double x = -1 * limits.getMinDepth();
                                     for (int i = 0; i < limits.getNumberPoints(); i++) {
 
-                                        double exP = alpha * (Math.tanh(sigma*x) + 1);
-                                        double sP = gamma * (Math.tanh(sigma*x) + 1) * (sin(2 * PI * t) + 1);
-                                        double gxP = delta * sigma *((exp(x) + exp(-1 * x)) / 2);
+                                        double exP = alpha * (Math.tanh(sigma*x) + 1.0);
+                                        double sP = gamma * (Math.tanh(sigma*x) + 1.0) * (sin(2.0 * PI * t) + 1.0);
+                                        double gxP = delta * sigma *((exp(x) + exp(-1 * x)) / 2.0);
                                         ex.add(exP);
                                         s.add(sP);
                                         gx.add(gxP);
                                         funcPoints.add(alpha*(Math.tanh(sigma* functionTrajectory.trajectoryPoint(t,a,b)))
                                                 + gamma * (Math.tanh(sigma * functionTrajectory.trajectoryPoint(t,a,b)) + 1) * (sin(2 * PI * t) + 1)
                                                 - 4 * PI * PI * beta * b * b * Math.sin(2* PI * t) * Math.sin(2* PI * t)
-                                                + delta * (Math.exp(x) + exp(-1 * x))/2.0);
+                                                + delta * (Math.exp(functionTrajectory.trajectoryPoint(t,a,b)) + exp(-1 * functionTrajectory.trajectoryPoint(t,a,b)))/2.0);
                                         t = t + stepT;
                                         x = x + stepX;
                                     }

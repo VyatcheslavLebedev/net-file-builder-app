@@ -22,9 +22,9 @@ public class IntegratorImpl implements Integrator{
         int z = 4;
         double s;
 
-        s = points.get(0)*points.get(points.size()-1);
+        s = points.get(0) + points.get(points.size()-1);
 
-        for(int i = 1; i < limits.getNumberPoints(); i++){
+        for(int i = 1; i < limits.getNumberPoints()-1; i++){
             s = s + z * points.get(i);
             z = 6 - z;
         }

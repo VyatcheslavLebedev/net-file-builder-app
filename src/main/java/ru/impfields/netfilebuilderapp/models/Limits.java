@@ -17,9 +17,9 @@ public class Limits {
 
     private double amplitudeMin = 10.0;
 
-    private double minSigma = 1.0;
-    private double maxSigma = 3.0;
-    private double stepSigma = 1.0;
+    private double minSigma = 0.03;
+    private double maxSigma = 0.1;
+    private double stepSigma = 0.01;
 
     private double limitA = -1.0;
     private double limitB = -1.0;
