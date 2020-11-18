@@ -44,23 +44,17 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
          double beta = limits.getMinBeta();
          double gamma = limits.getMinGamma();
          double delta = limits.getMinDelta();
-         double sigma = limits.getMinSigma();
 
          while(alpha <= limits.getMaxAlpha()){
             beta = limits.getMinBeta();
             gamma = limits.getMinGamma();
             delta = limits.getMinDelta();
-            sigma = limits.getMinSigma();
             while(beta <= limits.getMaxBeta()){
                 gamma = limits.getMinGamma();
                 delta = limits.getMinDelta();
-                sigma = limits.getMinSigma();
                 while(gamma <= limits.getMaxGamma()){
                     delta = limits.getMinDelta();
-                    sigma = limits.getMinSigma();
                     while(delta <= limits.getMaxDelta()){
-                        sigma = limits.getMinSigma();
-                        while(sigma <= limits.getMaxSigma()) {
                             double t = 0.0;
                             double x = -1 * limits.getMinDepth();
                             List<Double> dataWrite = new ArrayList<>();
@@ -69,8 +63,8 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
                             List<Double> gx = new LinkedList<>();
                             Constants constants = new Constants(alpha, beta, gamma, delta);
                             for (int i = 0; i < limits.getNumberPoints(); i++) {
-                                ex.add(alpha * sigma * (x + limits.getMinDepth()));
-                                s.add(gamma * -1 * sigma * (x + limits.getMinDepth()) * cos(2 * PI * t) + 1);
+                                ex.add(alpha  * (x + limits.getMinDepth()));
+                                s.add(gamma * -1  * (x + limits.getMinDepth()) * cos(2 * PI * t) + 1);
                                 gx.add(delta * -1 * (x + limits.getMinDepth()/2.0) * (x + limits.getMinDepth()/2.0));
                                 t = t + stepT;
                                 x = x + stepX;
@@ -94,8 +88,6 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
                             }
                             csvWriter.writeNext(array);
 
-                            sigma = sigma + limits.getStepSigma();
-                        }
 
                       delta = delta + limits.getStepDelta();
                     }

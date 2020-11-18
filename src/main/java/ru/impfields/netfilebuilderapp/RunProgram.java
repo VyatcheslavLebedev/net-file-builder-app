@@ -7,6 +7,7 @@ import ru.impfields.netfilebuilderapp.datashuffler.Shuffler;
 import ru.impfields.netfilebuilderapp.generationtrainmain.*;
 import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
 import ru.impfields.netfilebuilderapp.models.Limits;
+import ru.impfields.netfilebuilderapp.models.LimitsHyperbolic;
 import ru.impfields.netfilebuilderapp.verifyer.Counter;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +34,8 @@ public class RunProgram{
 
     private Limits limits;
 
+    private LimitsHyperbolic limitsHyperbolic;
+
     private FunctionTrajectory functionTrajectory;
 
     private Shuffler shuffler;
@@ -46,7 +49,7 @@ public class RunProgram{
                       ConstantA constantA1, ConstantB constantB1,
                       FunctionTrajectory functionTrajectory1,Limits limits1,
                       BufferedReader bufferedReader,FileReader fileReader,Counter counter,Shuffler shuffler,
-                      Integrator integrator) {
+                      Integrator integrator,LimitsHyperbolic limitsHyperbolic) {
         fileWriter = fileWriter1;
         csvWriter = csvWriter1;
         constantA = constantA1;
@@ -58,11 +61,12 @@ public class RunProgram{
         this.counter = counter;
         this.shuffler = shuffler;
         this.integrator = integrator;
+        this.limitsHyperbolic = limitsHyperbolic;
     }
 
     @PostConstruct
     public void run() throws IOException {
-        GenerateTrainMain generateTrainMain = new GenerateHyperbolicAproximation(fileWriter,csvWriter,limits,
+        GenerateTrainMain generateTrainMain = new GenerateHyperbolicAproximation(fileWriter,csvWriter,limitsHyperbolic,
                 functionTrajectory,integrator);
         generateTrainMain.generate();
         counter.count();

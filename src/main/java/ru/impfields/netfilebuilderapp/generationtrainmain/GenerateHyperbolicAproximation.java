@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
 import ru.impfields.netfilebuilderapp.models.Limits;
+import ru.impfields.netfilebuilderapp.models.LimitsHyperbolic;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -18,16 +19,16 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
 
     private FileWriter fileWriter;
     private CSVWriter csvWriter;
-    private Limits limits;
+    private LimitsHyperbolic limitsHyperbolic;
     private FunctionTrajectory functionTrajectory;
     private Integrator integrator;
 
     @Autowired
-    public GenerateHyperbolicAproximation(FileWriter fileWriter, CSVWriter csvWriter, Limits limits,
+    public GenerateHyperbolicAproximation(FileWriter fileWriter, CSVWriter csvWriter, LimitsHyperbolic limitsHyperbolic,
                                           FunctionTrajectory functionTrajectory, Integrator integrator){
         this.csvWriter = csvWriter;
         this.fileWriter = fileWriter;
-        this.limits = limits;
+        this.limitsHyperbolic = limitsHyperbolic;
         this.functionTrajectory = functionTrajectory;
         this.integrator = integrator;
 
@@ -35,123 +36,119 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
 
     public void generate(){
 
-        double stepT = 1.0 / limits.getNumberPoints();
-        double stepX = limits.getMinDepth() / limits.getNumberPoints();
-        double a = limits.getMinA();
-        double b = limits.getMinB();
+        double stepT = 1.0 / limitsHyperbolic.getNumberPoints();
+        double stepX = limitsHyperbolic.getMinDepth() / limitsHyperbolic.getNumberPoints();
+        double alpha = limitsHyperbolic.getMinAlpha();
+        double beta = limitsHyperbolic.getMinBeta();
+        double gamma = limitsHyperbolic.getMinGamma();
+        double delta = limitsHyperbolic.getMinDelta();
+        double sigma = limitsHyperbolic.getMinSigma();
 
-        while(a < limits.getLimitA()){
-            b = limits.getMinB();
-            while(b < limits.getLimitB()){
-                double res;
-                if ((abs(b) > limits.getAmplitudeMin()) && (a < b)) {
-                    res = 1.0;
-                }
-                else {
-                    res = 0.0;
-                }
+        while(alpha <= limitsHyperbolic.getMaxAlpha()){
+            beta = limitsHyperbolic.getMinBeta();
+            gamma = limitsHyperbolic.getMinGamma();
+            delta = limitsHyperbolic.getMinDelta();
+            sigma = limitsHyperbolic.getMinSigma();
+            while(beta <= limitsHyperbolic.getMaxBeta()){
+                gamma = limitsHyperbolic.getMinGamma();
+                delta = limitsHyperbolic.getMinDelta();
+                sigma = limitsHyperbolic.getMinSigma();
+                while(gamma <= limitsHyperbolic.getMaxGamma()){
+                    delta = limitsHyperbolic.getMinDelta();
+                    sigma = limitsHyperbolic.getMinSigma();
+                    while(delta <= limitsHyperbolic.getMaxDelta()){
+                        sigma = limitsHyperbolic.getMinSigma();
+                        while(sigma <= limitsHyperbolic.getMaxSigma()) {
+                            double timePoint = 0.0;
+                            double xPoint = -1 * limitsHyperbolic.getMinDepth();
 
-                double alpha = limits.getMinAlpha();
-                double beta = limits.getMinBeta();
-                double gamma = limits.getMinGamma();
-                double delta = limits.getMinDelta();
-                double sigma = limits.getMinSigma();
+                            List<Double> ex = new LinkedList<>();
+                            List<Double> s = new LinkedList<>();
+                            List<Double> gx = new LinkedList<>();
 
-                double fitnessMax = Double.MIN_VALUE;
+                            List<Double> dataWrite = new ArrayList<>();
 
-                List<Double> exMaxFitness = new LinkedList<>();
-                List<Double> sMaxFitness = new LinkedList<>();
-                List<Double> gxMaxFitness = new LinkedList<>();
-                Double betaMaxFitness = Double.MIN_VALUE;
+                            for (int i = 0; i < limitsHyperbolic.getNumberPoints(); i++) {
 
-                List<Double> dataWrite = new ArrayList<>();
+                                double exP = alpha * (Math.tanh(sigma*xPoint) + 1.0);
+                                double sP = gamma * (Math.tanh(sigma*xPoint) + 1.0) * (sin(2.0 * PI * timePoint) + 1.0);
+                                double gxP = delta * sigma *((exp(xPoint) + exp(-1 * xPoint)) / 2.0);
+                                ex.add(exP);
+                                s.add(sP);
+                                gx.add(gxP);
+                                timePoint = timePoint + stepT;
+                                xPoint = xPoint + stepX;
+                            }
 
-                while(alpha <= limits.getMaxAlpha()){
-                    beta = limits.getMinBeta();
-                    gamma = limits.getMinGamma();
-                    delta = limits.getMinDelta();
-                    sigma = limits.getMinSigma();
-                    while(beta <= limits.getMaxBeta()){
-                        gamma = limits.getMinGamma();
-                        delta = limits.getMinDelta();
-                        sigma = limits.getMinSigma();
-                        while(gamma <= limits.getMaxGamma()){
-                            delta = limits.getMinDelta();
-                            sigma = limits.getMinSigma();
-                            while(delta <= limits.getMaxDelta()){
-                                sigma = limits.getMinSigma();
-                                while(sigma <= limits.getMaxSigma()) {
+                            double a = limitsHyperbolic.getMinA();
+                            double b = limitsHyperbolic.getMinB();
 
-                                    List<Double> ex = new LinkedList<>();
-                                    List<Double> s = new LinkedList<>();
-                                    List<Double> gx = new LinkedList<>();
+                            double aMaxFitness = Double.MIN_VALUE;
+                            double bMaxFitness = Double.MIN_VALUE;
+                            double fitnessMax = Double.MIN_VALUE;
+
+                            while(a < limitsHyperbolic.getLimitA()){
+                                b = limitsHyperbolic.getMinB();
+                                while(b < limitsHyperbolic.getLimitB()){
+                                    double res;
+                                    if ((abs(b) > limitsHyperbolic.getAmplitudeMin()) && (a <= b)) {
+                                        res = 1.0;
+                                    } else {
+                                        res = 0.0;
+                                    }
+
                                     List<Double> funcPoints = new ArrayList<>();
 
                                     double t = 0.0;
-                                    double x = -1 * limits.getMinDepth();
-                                    for (int i = 0; i < limits.getNumberPoints(); i++) {
-
-                                        double exP = alpha * (Math.tanh(sigma*x) + 1.0);
-                                        double sP = gamma * (Math.tanh(sigma*x) + 1.0) * (sin(2.0 * PI * t) + 1.0);
-                                        double gxP = delta * sigma *((exp(x) + exp(-1 * x)) / 2.0);
-                                        ex.add(exP);
-                                        s.add(sP);
-                                        gx.add(gxP);
+                                    double x = -1 * limitsHyperbolic.getMinDepth();
+                                    for (int i = 0; i < limitsHyperbolic.getNumberPoints(); i++) {
                                         funcPoints.add(alpha*(Math.tanh(sigma* functionTrajectory.trajectoryPoint(t,a,b)))
                                                 + gamma * (Math.tanh(sigma * functionTrajectory.trajectoryPoint(t,a,b)) + 1) * (sin(2 * PI * t) + 1)
                                                 - 4 * PI * PI * beta * b * b * Math.sin(2* PI * t) * Math.sin(2* PI * t)
                                                 + delta * (Math.exp(functionTrajectory.trajectoryPoint(t,a,b)) + exp(-1 * functionTrajectory.trajectoryPoint(t,a,b)))/2.0);
                                         t = t + stepT;
                                         x = x + stepX;
-                                    }
-
+                                            }
 
                                     double fitness = integrator.integrate(funcPoints, stepT);
                                     if (fitness > fitnessMax) {
                                         fitnessMax = fitness;
+                                        aMaxFitness = a;
+                                        bMaxFitness = b;
 
-                                        exMaxFitness.clear();
-                                        exMaxFitness.addAll(ex);
-
-                                        sMaxFitness.clear();
-                                        sMaxFitness.addAll(s);
-
-                                        gxMaxFitness.clear();
-                                        gxMaxFitness.addAll(gx);
-
-                                        betaMaxFitness = beta;
                                     }
 
+                                    dataWrite.addAll(ex);
+                                    dataWrite.addAll(s);
+                                    dataWrite.addAll(gx);
+                                    dataWrite.add(beta);
+                                    dataWrite.add(res);
 
-                                    sigma = sigma + limits.getStepSigma();
+                                    String[] array = new String[dataWrite.size()];
+
+                                    for (int i = 0; i < dataWrite.size(); i++) {
+                                        array[i] = dataWrite.get(i).toString();
+                                    }
+                                    csvWriter.writeNext(array);
+
+                                    b = b + limitsHyperbolic.getStepB();
                                 }
-
-                                delta = delta + limits.getStepDelta();
+                                a = a + limitsHyperbolic.getStepA();
                             }
-                            gamma = gamma + limits.getStepGamma();
+
+                            sigma = sigma + limitsHyperbolic.getStepSigma();
                         }
-                        beta = beta + limits.getStepBeta();
+
+                        delta = delta + limitsHyperbolic.getStepDelta();
                     }
-                    alpha = alpha + limits.getStepAlpha();
+                    gamma = gamma + limitsHyperbolic.getStepGamma();
                 }
-
-                dataWrite.addAll(exMaxFitness);
-                dataWrite.addAll(sMaxFitness);
-                dataWrite.addAll(gxMaxFitness);
-                dataWrite.add(betaMaxFitness);
-                dataWrite.add(res);
-
-                String[] array = new String[dataWrite.size()];
-
-                for (int i = 0; i < dataWrite.size(); i++) {
-                    array[i] = dataWrite.get(i).toString();
-                }
-                csvWriter.writeNext(array);
-
-                b = b + limits.getStepB();
+                beta = beta + limitsHyperbolic.getStepBeta();
             }
-            a = a + limits.getStepA();
+            alpha = alpha + limitsHyperbolic.getStepAlpha();
         }
+
+
 
 
 
