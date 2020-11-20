@@ -25,27 +25,27 @@ public class Counter {
      }
 
      public void count() throws IOException {
+         BufferedReader bufferedReader2 = new BufferedReader(new FileReader("src/main/resources/dataShuffled.csv"));
          int countPos = 0;
          int countNeg = 0;
          int countAll = 0;
-         String str = bufferedReader.readLine();
+         String str = bufferedReader2.readLine();
          while(str != null){
              String[] csvline = str.split(",");
              List<String> list = Arrays.asList(csvline);
              double parseNumber = Double.parseDouble(list.get(list.size()-1));
-             if (parseNumber >0.0){
+             if (parseNumber > 0.0){
                  countPos++;
-
              }
              if(parseNumber < 1.0){
                  countNeg++;
              }
              countAll++;
-             str = bufferedReader.readLine();
+             str = bufferedReader2.readLine();
 
 
          }
-
+         bufferedReader2.close();
          System.out.print("count 1: " + countPos +" count 0: "+ countNeg + " countAll: " + countAll);
      }
 

@@ -64,8 +64,8 @@ public class GenerateKvadraticLinearAproximation implements GenerateTrainMain{
                             Constants constants = new Constants(alpha, beta, gamma, delta);
                             for (int i = 0; i < limits.getNumberPoints(); i++) {
                                 ex.add(alpha  * (x + limits.getMinDepth()));
-                                s.add(gamma * -1  * (x + limits.getMinDepth()) * cos(2 * PI * t) + 1);
-                                gx.add(delta * -1 * (x + limits.getMinDepth()/2.0) * (x + limits.getMinDepth()/2.0));
+                                s.add(gamma  * (x + limits.getMinDepth()) * cos(2 * PI * t) + 1);
+                                gx.add(delta  * (x + limits.getMinDepth()/2.0) * (x + limits.getMinDepth()/2.0));
                                 t = t + stepT;
                                 x = x + stepX;
                             }

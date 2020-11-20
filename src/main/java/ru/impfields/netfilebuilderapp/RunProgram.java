@@ -4,6 +4,7 @@ import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.datashuffler.Shuffler;
+import ru.impfields.netfilebuilderapp.fitandevaluatemain.FitNetwork;
 import ru.impfields.netfilebuilderapp.generationtrainmain.*;
 import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
 import ru.impfields.netfilebuilderapp.models.Limits;
@@ -65,11 +66,14 @@ public class RunProgram{
     }
 
     @PostConstruct
-    public void run() throws IOException {
-        GenerateTrainMain generateTrainMain = new GenerateHyperbolicAproximation(fileWriter,csvWriter,limitsHyperbolic,
-                functionTrajectory,integrator);
-        generateTrainMain.generate();
-        counter.count();
+    public void run() throws IOException, InterruptedException {
+
+        FitNetwork fitter = new FitNetwork();
+        fitter.fit();
+        //GenerateTrainMain generateTrainMain = new GenerateKvadraticLinearAproximation(fileWriter,csvWriter,
+                //constantA,constantB,functionTrajectory,limits);
+        //generateTrainMain.generate();
+        //counter.count();
         //shuffler.shuffle();
         //fileWriter.close();
         //csvWriter.close();

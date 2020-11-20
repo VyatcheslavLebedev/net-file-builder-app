@@ -16,7 +16,7 @@ public class Csv {
 
     @Bean
     public FileWriter getFileWriter() throws IOException {
-        return new FileWriter("train.csv");
+        return new FileWriter("src/main/resources/train.csv");
     }
 
     @Bean
@@ -26,7 +26,7 @@ public class Csv {
 
     @Bean
     public FileReader getFileReader() throws FileNotFoundException {
-        return new FileReader("train.csv");
+        return new FileReader("src/main/resources/train.csv");
     }
 
 

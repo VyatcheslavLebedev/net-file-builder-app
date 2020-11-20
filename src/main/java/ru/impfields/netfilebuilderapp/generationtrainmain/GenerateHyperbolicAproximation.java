@@ -4,7 +4,6 @@ import com.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.impfields.netfilebuilderapp.generationtrainmain.integration.Integrator;
-import ru.impfields.netfilebuilderapp.models.Limits;
 import ru.impfields.netfilebuilderapp.models.LimitsHyperbolic;
 
 import java.io.FileWriter;
@@ -35,7 +34,8 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
     }
 
     public void generate(){
-
+        int countPos = 0;
+        int countNeg = 0;
         double stepT = 1.0 / limitsHyperbolic.getNumberPoints();
         double stepX = limitsHyperbolic.getMinDepth() / limitsHyperbolic.getNumberPoints();
         double alpha = limitsHyperbolic.getMinAlpha();
@@ -85,7 +85,9 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
 
                             double aMaxFitness = Double.MIN_VALUE;
                             double bMaxFitness = Double.MIN_VALUE;
-                            double fitnessMax = Double.MIN_VALUE;
+                            double fitnessMax = Double.NEGATIVE_INFINITY;
+                            double resMaxFitness = -1.0;
+
 
                             while(a < limitsHyperbolic.getLimitA()){
                                 b = limitsHyperbolic.getMinB();
@@ -103,9 +105,9 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
                                     double x = -1 * limitsHyperbolic.getMinDepth();
                                     for (int i = 0; i < limitsHyperbolic.getNumberPoints(); i++) {
                                         funcPoints.add(alpha*(Math.tanh(sigma* functionTrajectory.trajectoryPoint(t,a,b)))
-                                                + gamma * (Math.tanh(sigma * functionTrajectory.trajectoryPoint(t,a,b)) + 1) * (sin(2 * PI * t) + 1)
+                                                -gamma * (Math.tanh(sigma * functionTrajectory.trajectoryPoint(t,a,b)) + 1) * (sin(2 * PI * t) + 1)
                                                 - 4 * PI * PI * beta * b * b * Math.sin(2* PI * t) * Math.sin(2* PI * t)
-                                                + delta * (Math.exp(functionTrajectory.trajectoryPoint(t,a,b)) + exp(-1 * functionTrajectory.trajectoryPoint(t,a,b)))/2.0);
+                                                - delta * (Math.exp(functionTrajectory.trajectoryPoint(t,a,b)) + exp(-1 * functionTrajectory.trajectoryPoint(t,a,b)))/2.0);
                                         t = t + stepT;
                                         x = x + stepX;
                                             }
@@ -115,25 +117,33 @@ public class GenerateHyperbolicAproximation implements GenerateTrainMain {
                                         fitnessMax = fitness;
                                         aMaxFitness = a;
                                         bMaxFitness = b;
+                                        resMaxFitness = res;
 
                                     }
-
-                                    dataWrite.addAll(ex);
-                                    dataWrite.addAll(s);
-                                    dataWrite.addAll(gx);
-                                    dataWrite.add(beta);
-                                    dataWrite.add(res);
-
-                                    String[] array = new String[dataWrite.size()];
-
-                                    for (int i = 0; i < dataWrite.size(); i++) {
-                                        array[i] = dataWrite.get(i).toString();
-                                    }
-                                    csvWriter.writeNext(array);
 
                                     b = b + limitsHyperbolic.getStepB();
                                 }
                                 a = a + limitsHyperbolic.getStepA();
+                            }
+                            if (resMaxFitness > 0.0){
+                                countPos++;
+                            } else {
+                                countNeg++;
+                            }
+                            dataWrite.addAll(ex);
+                            dataWrite.addAll(s);
+                            dataWrite.addAll(gx);
+                            dataWrite.add(beta);
+                            dataWrite.add(resMaxFitness);
+
+                            String[] array = new String[dataWrite.size()];
+
+                            for (int i = 0; i < dataWrite.size(); i++) {
+                                array[i] = dataWrite.get(i).toString();
+                            }
+
+                            if(resMaxFitness> 0.0) {
+                                csvWriter.writeNext(array);
                             }
 
                             sigma = sigma + limitsHyperbolic.getStepSigma();
